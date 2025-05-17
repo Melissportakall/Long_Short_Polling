@@ -1,4 +1,6 @@
 🧠 What is Long & Short Polling?
+
+
 🔁 Short Polling
 Definition: The client sends HTTP requests to the server at regular intervals (e.g., every 2 seconds) to check for new data.
 
@@ -9,6 +11,9 @@ It is inefficient when the data rarely changes.
 
 Client: Every 2 seconds → “Is there new data?”
 Server: “No” or “Here is the data”
+
+
+
 🕓 Long Polling
 Definition: The client sends a request and the server keeps the connection open until there is new data or a timeout.
 
@@ -23,6 +28,8 @@ Client: “Okay. I'm waiting again now.”
 🔄 What Are the Alternatives to Polling?
 Besides polling, modern real-time communication solutions include:
 
+
+
 🔌 WebSocket
 Enables two-way (full-duplex) communication.
 
@@ -30,12 +37,16 @@ Once the connection is established, both server and client can send data to each
 
 Ideal for chat apps, online games, and real-time dashboards.
 
+
+
 📡 Server-Sent Events (SSE)
 A simple way to send one-way data from the server to the client over HTTP.
 
 Supported by most browsers.
 
 Best for use cases like live score updates, news feeds, or stock tickers.
+
+
 
 📊 Comparison Table
 Feature	Short Polling	Long Polling	Server-Sent Events (SSE)	WebSocket
@@ -49,6 +60,8 @@ Feature	Short Polling	Long Polling	Server-Sent Events (SSE)	WebSocket
 🔌 Extra Infrastructure	None	None	None	Yes (WebSocket server needed)
 🧱 Typical Use Case	Simple polling APIs	Notifications, chat	Live feeds, news, scores	Chat apps, multiplayer games
 
+
+
 🎯 When to Use Which?
 Scenario	Recommended Method	Explanation
 Data changes every few seconds	Short Polling	Good enough for simple and infrequent data updates
@@ -59,6 +72,9 @@ Real-time two-way communication	WebSocket	Best for games, chats, live monitoring
 ------------------------------------------------------------------------------------------------------------------------------
 
 🧠 Long & Short Polling Nedir?
+
+
+
 🔁 Short Polling
 Tanım: İstemci (client), sunucuya (server) belirli aralıklarla (örneğin her 2 saniyede bir) yeni veri var mı diye HTTP isteği gönderir.
 
@@ -68,6 +84,9 @@ Genellikle veri değişiminin az olduğu yerlerde verimsizdir.
 
 Client: Her 2 saniyede bir → “Yeni veri var mı?”
 Server: “Yok” veya “İşte veri”
+
+
+
 🕓 Long Polling
 Tanım: İstemci, bir istek gönderir ve sunucu bu isteği cevaplamadan bekletir. Yeni veri geldiğinde yanıt verir.
 
@@ -78,8 +97,13 @@ Daha az istek → daha az sunucu yükü → daha verimli sonuçlar
 Client: “Yeni veri geldiğinde bana bildir.”
 Server: Bekliyor... Yeni veri geldiğinde → “İşte veri!”
 Client: “Tamam. Şimdi tekrar bekliyorum.”
+
+
 🔄 Long & Short Polling’in Alternatifleri Nelerdir?
 Polling dışında, daha modern ve etkili olan yöntemler de vardır:
+
+
+
 
 🔌 WebSocket
 İki yönlü (full-duplex) iletişim sağlar.
@@ -88,12 +112,16 @@ Bir bağlantı kurulur ve hem istemci hem de sunucu bu bağlantı üzerinden ver
 
 Özellikle chat, oyun gibi uygulamalar için idealdir.
 
+
+
 📡 Server-Sent Events (SSE)
 Sadece sunucudan istemciye tek yönlü veri akışı sağlar.
 
 Web tarayıcılarında desteklenir.
 
 Hafif ve basittir; örneğin canlı skor, haber güncellemesi gibi durumlarda etkilidir.
+
+
 
 📊 Karşılaştırma Tablosu
 Özellik	Short Polling	Long Polling	Server-Sent Events (SSE)	WebSocket
@@ -106,6 +134,8 @@ Hafif ve basittir; örneğin canlı skor, haber güncellemesi gibi durumlarda et
 🔄 Ölçeklenebilirlik	Düşük	Orta	Orta	Yüksek (ama karmaşık)
 🔌 Kütüphane/Altyapı Gerekir	Hayır	Hayır	Hayır	Evet (WebSocket sunucusu)
 🧱 Kullanım Alanı	Basit API sorguları	Chat, bildirimler	Canlı skorlar, finans akışı	Gerçek zamanlı oyunlar, chat
+
+
 
 🎯 Hangi Durumda Hangisi Kullanılır?
 Durum	Önerilen Yöntem	Açıklama
