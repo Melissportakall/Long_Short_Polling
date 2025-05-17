@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Polling Demo</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial, sans-serif;
+      padding-top: 30px;
+      transition: background-color 0.3s ease;
+    }
+
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+
+    #output,
+    #time,
+    #counter,
+    #poll-type {
+      font-size: 20px;
+      margin-top: 10px;
+    }
+
+    #log {
+      margin-top: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+      text-align: left;
+      padding: 10px;
+      border: 1px solid #ccc;
+      width: 60%;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: #f9f9f9;
+    }
+
+    #log li {
+      font-size: 14px;
+      margin-bottom: 5px;
+
+      #output.timeout {
+        color: red;
+        font-weight: bold;
+        animation: blink 1s step-end infinite;
+      }
+
+      @keyframes blink {
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🛰️ Long vs. Short Polling Demo</h1>
+
+  <button onclick="startShortPolling()">Start Short Polling</button>
+  <button onclick="startLongPolling()">Start Long Polling</button>
+  <button onclick="triggerServer()">Sunucudan Veri Üret (Tetikle)</button>
+  <button onclick="stopPolling()">Durdur</button>
+
+  <div id="poll-type">Seçili Poll Türü: -</div>
+  <div id="output">Bekleniyor...</div>
+  <div id="time">Son İstek Zamanı: -</div>
+  <div id="counter">İstek Sayısı: 0</div>
+
+  <ul id="log"></ul>
+
+  <script>
+    let shortInterval;
+    let requestCount = 0;
+    let isWaiting = false;
+
+    function getCurrentTime() {
+      const now = new Date();
+      return now.toLocaleTimeString();
+    }
+
+    function updateDisplay(type, message) {
+      requestCount++;
+      const time = getCurrentTime();
+
+      document.getElementById("poll-type").innerText = `Seçili Poll Türü: ${type}`;
+      document.getElementById("output").innerText = `${type} Response: ${message}`;
+      document.getElementById("time").innerText = "Son İstek Zamanı: " + time;
+      document.getElementById("counter").innerText = "İstek Sayısı: " + requestCount;
+
+      
+      document.body.style.backgroundColor = (type === "Short Polling") ? "#e0f7fa" : "#fff3e0";
+
+      
+      const outputDiv = document.getElementById("output");
+      if (message.includes("zaman aşımı") || message.includes("Zaman aşımı")) {
+        outputDiv.classList.add("timeout");
+      } else {
+        outputDiv.classList.remove("timeout");
+      }
+      
+      const logEntry = document.createElement("li");
+      logEntry.innerText = `[${time}] ${type}: ${message}`;
+      document.getElementById("log").prepend(logEntry);
+    }
+
+    function startShortPolling() {
+      stopPolling(); 
+      requestCount = 0;
+      shortInterval = setInterval(() => {
+        fetch("http://127.0.0.1:5000/short")
+          .then((response) => response.json())
+          .then((data) => {
+            updateDisplay("Short Polling", data.message);
+          })
+          .catch(() => {
+            updateDisplay("Short Polling", "⚠️ Sunucuya ulaşılamadı.");
+          });
+      }, 2000);
+    }
+
+    function startLongPolling() {
+  stopPolling(); //eğer kullancıı butona birden fazla basarsa önceki poolingi durdurmak için
+  requestCount = 0;
+  isWaiting = true;
+
+  function poll() {
+    if (!isWaiting) return;  //durdur butonuna basıldığını kontrol ediyoruz
+
+    fetch("http://127.0.0.1:5000/long")
+      .then((response) => response.json())
+      .then((data) => {
+        if (!isWaiting) return;
+        updateDisplay("Long Polling", data.message);
+
+        if (!data.message.includes("zaman aşımı")) {
+          poll(); 
+        } else {
+          if (isWaiting) {  
+            setTimeout(() => {
+              poll();
+            }, 1000);
+          }
+        }
+      })
+      .catch(() => {
+        if (!isWaiting) return;
+        updateDisplay("Long Polling", "⚠️ Sunucuya ulaşılamadı.");
+        if (isWaiting) {
+          setTimeout(poll, 2000);
+        }
+      });
+  }
+
+  poll();
+}
+
+
+
+    function triggerServer() {
+      fetch("http://127.0.0.1:5000/trigger", {
+        method: "POST",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          
+          alert(data.message);  
+          
+        })
+        .catch(() => {
+          updateDisplay("Trigger", "⚠️ Tetikleme başarısız.");
+        });
+    }
+
+
+    function stopPolling() {
+      clearInterval(shortInterval);
+      isWaiting = false;
+      console.log("Polling durduruldu.",isWaiting);
+      document.getElementById("poll-type").innerText = "Seçili Poll Türü: -";
+      document.body.style.backgroundColor = "#ffffff";
+    }
+  </script>
+</body>
+
+</html>
